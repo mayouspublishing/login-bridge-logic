@@ -1,0 +1,7 @@
+name = "login-bridge-logic"
+type = "javascript"
+
+compatibility_date = "2024-05-10"
+
+[build]
+command = ""
