@@ -1,4 +1,12 @@
 name = "login-bridge-logic"
+main = "index.js"
 type = "javascript"
 compatibility_date = "2024-05-10"
-main = "index.js"
+account_id = "d6a1f43dd0b2d4efd5e301baa532fe30"
+zone_id = "e08ad294b9b7b4afdde5a0bf16a0e862"
+workers_dev = false
+
+routes = [
+  { pattern = "login-api.mayous.org", zone_id = "e08ad294b9b7b4afdde5a0bf16a0e862" },
+  { pattern = "login-api.mayous.org/*", zone_id = "e08ad294b9b7b4afdde5a0bf16a0e862" }
+]
