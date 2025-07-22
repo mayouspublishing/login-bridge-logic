@@ -1,6 +1,8 @@
 export default {
   async fetch(request) {
-    // Handle preflight
+    const url = new URL(request.url);
+
+    // Handle preflight CORS
     if (request.method === "OPTIONS") {
       return new Response(null, {
         status: 204,
@@ -12,30 +14,43 @@ export default {
       });
     }
 
+    const backendBase = "https://script.google.com/macros/s/AKfycbyGsMvizzRXKaExglDi8a9W3jJvEAJOFlPy9XGxFkwL3Q5Hyhg2jPlJ9j3wLTXSZJs6fg/exec";
+
     try {
-      const backendUrl = "https://script.google.com/a/macros/mayous.org/s/AKfycbyGsMvizzRXKaExglDi8a9W3jJvEAJOFlPy9XGxFkwL3Q5Hyhg2jPlJ9j3wLTXSZJs6fg/exec";
+      if (request.method === "GET" && url.pathname === "/confirm" && url.searchParams.has("token")) {
+        const token = url.searchParams.get("token");
+        const redirectUrl = `${backendBase}?confirm=${encodeURIComponent(token)}`;
+        return fetch(redirectUrl); // proxy GET request to Apps Script
+      }
 
-      const body = await request.text(); // explicitly parse body
-      const backendRequest = new Request(backendUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: body
-      });
+      if (request.method === "POST") {
+        const body = await request.text();
 
-      const backendResponse = await fetch(backendRequest);
-      const responseText = await backendResponse.text();
+        const backendRequest = new Request(backendBase, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: body
+        });
 
-      return new Response(responseText, {
-        status: backendResponse.status,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type",
-        }
-      });
+        const backendResponse = await fetch(backendRequest);
+        const responseText = await backendResponse.text();
+
+        return new Response(responseText, {
+          status: backendResponse.status,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+          }
+        });
+      }
+
+      // Catch all fallback
+      return new Response("Not Found", { status: 404 });
+
     } catch (err) {
       return new Response(JSON.stringify({ result: "error", message: err.message }), {
         status: 500,
