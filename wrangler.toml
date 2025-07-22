@@ -9,6 +9,5 @@ workers_dev = false
 routes = [
   { pattern = "login-api.mayous.org", zone_id = "e08ad294b9b7b4afdde5a0bf16a0e862" },
   { pattern = "login-api.mayous.org/*", zone_id = "e08ad294b9b7b4afdde5a0bf16a0e862" },
-  { pattern = "read.mayous.org/confirm*", zone_id = "e08ad294b9b7b4afdde5a0bf16a0e862" }
 ]
 
